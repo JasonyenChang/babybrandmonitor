@@ -1,0 +1,16 @@
+{
+  "name": "baby-brand-monitor",
+  "version": "1.0.0",
+  "description": "嬰幼兒用品監測站後端 API (Vercel Serverless + Supabase + Claude)",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "init-db": "node scripts/init-db.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.105.0",
+    "pg": "^8.13.1"
+  }
+}

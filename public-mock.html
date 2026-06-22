@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>嬰幼兒用品監測站</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+
+:root{
+  --bg:#FBF1E4;
+  --card:#FFFDF8;
+  --card-alt:#FFF6E8;
+  --ink:#4A3B2E;
+  --ink-soft:#8C7A66;
+  --line:#EAD9BE;
+  --coral:#E8896B;
+  --coral-dark:#D5704F;
+  --positive:#6F9C76;
+  --positive-bg:#E6F0E2;
+  --neutral:#C99A3A;
+  --neutral-bg:#FBEFD3;
+  --negative:#D97757;
+  --negative-bg:#FBE3D7;
+  --yellow:#F3CD66;
+  --mint:#A8CFC0;
+  --skyblue:#A9C9E0;
+  --radius:18px;
+  --radius-sm:12px;
+}
+
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Noto Sans TC',-apple-system,BlinkMacSystemFont,sans-serif;-webkit-font-smoothing:antialiased;}
+.app{max-width:1080px;margin:0 auto;padding:30px 20px 56px;}
+
+header{position:relative;display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:28px;flex-wrap:wrap;padding-right:90px;}
+.title-group{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.title-group h1{font-family:'Baloo 2','Noto Sans TC',sans-serif;font-weight:700;font-size:27px;margin:0;color:var(--coral-dark);}
+.title-group p{margin:6px 0 0;color:var(--ink-soft);font-size:13.5px;width:100%;}
+
+.confetti{position:absolute;top:-6px;right:0;width:80px;height:80px;pointer-events:none;}
+.confetti .c{position:absolute;border-radius:50%;}
+.confetti .c1{width:20px;height:20px;background:var(--yellow);top:4px;right:46px;}
+.confetti .c2{width:14px;height:14px;background:var(--skyblue);top:30px;right:10px;border-radius:4px;transform:rotate(20deg);}
+.confetti .c3{width:11px;height:11px;background:var(--mint);top:54px;right:54px;}
+.confetti .c4{width:9px;height:9px;background:var(--coral);top:0;right:8px;}
+
+.tab-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.tab{font-family:'Noto Sans TC',sans-serif;font-weight:700;font-size:14.5px;padding:9px 22px;border:1.5px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink-soft);cursor:pointer;}
+.tab .en{display:block;font-size:9.5px;letter-spacing:.06em;font-weight:500;opacity:.7;margin-top:1px;}
+.tab.active{background:var(--coral);color:#fff;border-color:var(--coral);}
+.tab:focus-visible{outline:2px solid var(--coral-dark);outline-offset:2px;}
+
+.toolbar{display:flex;justify-content:flex-start;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:18px;}
+.public-note{font-size:12.5px;color:var(--ink-soft);background:var(--card-alt);padding:9px 14px;border-radius:999px;}
+.public-note.err{color:var(--negative);background:var(--negative-bg);}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px;}
+.grid.diaper-grid{grid-template-columns:repeat(auto-fill,minmax(250px,1fr));}
+.empty-note{color:var(--ink-soft);font-size:14px;grid-column:1/-1;}
+
+.filter-bar{display:none;flex-wrap:wrap;gap:6px;margin:-4px 0 18px;}
+.filter-chip{font-family:'Noto Sans TC',sans-serif;font-size:12.5px;background:var(--card);border:1px solid var(--line);color:var(--ink-soft);border-radius:999px;padding:6px 13px;cursor:pointer;}
+.filter-chip:hover{border-color:var(--coral);}
+.filter-chip.active{background:var(--coral);color:#fff;border-color:var(--coral);}
+
+.card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 20px 16px;display:flex;flex-direction:column;gap:13px;overflow:hidden;box-shadow:0 4px 14px rgba(180,140,90,.08);}
+.card-head h3{margin:0;font-size:17px;font-weight:700;line-height:1.3;color:var(--ink);}
+
+.stamp{position:absolute;top:46px;right:16px;width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;transform:rotate(-6deg);font-weight:700;font-size:12px;line-height:1.25;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.06);}
+.stamp.positive{background:var(--positive-bg);color:var(--positive);}
+.stamp.neutral{background:var(--neutral-bg);color:var(--neutral);}
+.stamp.negative{background:var(--negative-bg);color:var(--negative);}
+
+.field-label{font-size:11px;font-weight:700;letter-spacing:.03em;color:var(--ink-soft);margin-bottom:5px;}
+
+.series-list{display:flex;flex-direction:column;gap:6px;}
+.series-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 10px;background:var(--card-alt);border-radius:10px;font-size:12.5px;flex-wrap:wrap;}
+.series-name{color:var(--ink);}
+.flag-chip{display:inline-flex;align-items:center;gap:4px;font-size:12px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:2px 9px;white-space:nowrap;}
+.flag-chip.unknown{color:var(--ink-soft);}
+
+.field-value{font-size:13.5px;line-height:1.6;color:var(--ink);}
+.field-value.muted{color:var(--ink-soft);}
+.field-value.truncate{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;}
+
+.negative-flag{display:inline-block;font-size:10.5px;font-weight:700;background:var(--negative-bg);color:var(--negative);padding:3px 9px;border-radius:999px;letter-spacing:.02em;margin-bottom:5px;}
+
+.card-footer{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:auto;padding-top:10px;border-top:1px solid var(--line);}
+.updated-at{font-size:11px;color:var(--ink-soft);}
+.panel-link{font-family:'Noto Sans TC',sans-serif;font-weight:700;font-size:12px;background:none;border:none;color:var(--coral-dark);cursor:pointer;padding:0;white-space:nowrap;text-decoration:underline;text-decoration-color:transparent;transition:text-decoration-color .15s;}
+.panel-link:hover{text-decoration-color:var(--coral-dark);}
+
+.panel-backdrop{position:fixed;inset:0;background:rgba(74,59,46,.35);opacity:0;visibility:hidden;transition:opacity .2s;z-index:40;}
+.panel-backdrop.open{opacity:1;visibility:visible;}
+.panel{position:fixed;top:0;right:0;height:100vh;width:380px;max-width:92vw;background:var(--card);border-left:1px solid var(--line);box-shadow:-8px 0 24px rgba(120,90,50,.12);transform:translateX(100%);transition:transform .25s ease;z-index:50;display:flex;flex-direction:column;}
+.panel.open{transform:translateX(0);}
+.panel-header{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;border-bottom:1px solid var(--line);background:var(--card-alt);}
+.panel-header h3{margin:0;font-size:16px;font-weight:700;color:var(--ink);}
+.panel-close{background:none;border:none;font-size:20px;color:var(--ink-soft);cursor:pointer;line-height:1;padding:0;}
+.panel-close:hover{color:var(--negative);}
+.panel-body{flex:1;overflow-y:auto;padding:6px 20px 24px;}
+.panel-item{padding:13px 0;border-bottom:1px solid var(--line);}
+.panel-item:last-child{border-bottom:none;}
+.panel-item-tag{font-size:10.5px;font-weight:700;letter-spacing:.03em;color:var(--ink-soft);display:inline-block;margin-bottom:5px;}
+.panel-item-title{font-size:13.5px;line-height:1.55;margin:0 0 5px;color:var(--ink);}
+.panel-item-link{font-size:11.5px;font-weight:700;color:var(--coral-dark);text-decoration:none;}
+.panel-item-link:hover{text-decoration:underline;}
+@media (max-width:560px){.panel{width:100vw;}}
+
+footer.disclaimer{margin-top:32px;font-size:11.5px;color:var(--ink-soft);line-height:1.6;border-top:1px solid var(--line);padding-top:14px;}
+
+@media (max-width:560px){
+  header{flex-direction:column;align-items:flex-start;padding-right:0;}
+  .confetti{display:none;}
+  .tab{padding:8px 16px;font-size:13.5px;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="confetti" aria-hidden="true"><span class="c c1"></span><span class="c c2"></span><span class="c c3"></span><span class="c c4"></span></div>
+    <div class="title-group">
+      <h1>嬰幼兒用品監測站</h1>
+      <p>尿布・副食品・奶粉　最新新聞與社群動態追蹤（目前畫面上的內容都是測試用假資料）</p>
+    </div>
+  </header>
+
+  <nav class="tab-bar" id="tabBar"></nav>
+
+  <div class="filter-bar" id="filterBar"></div>
+
+  <div class="toolbar">
+    <span class="public-note" id="publicNote">資料載入中…</span>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <footer class="disclaimer">
+    資訊由站方整理而成，可能有遺漏或誤差，僅供參考；正式採購決策建議再交叉確認官方公告與包裝標示。本頁為純前端展示頁，沒有任何資料寫入功能。
+  </footer>
+</div>
+
+<div class="panel-backdrop" id="panelBackdrop"></div>
+<aside class="panel" id="panel">
+  <div class="panel-header">
+    <h3 id="panelTitle"></h3>
+    <button class="panel-close" id="panelClose" aria-label="關閉面板">×</button>
+  </div>
+  <div class="panel-body" id="panelBody"></div>
+</aside>
+
+<script>
+// ====== 假資料模式：這裡的內容是寫死的測試資料，不會打任何API ======
+function makeMockData(){
+  return {
+    diaper: [
+      { id:'d1', name:'好奇 Huggies', sentiment:'positive', has_negative:false,
+        series:[{name:'小淘氣',origin:'台灣'},{name:'雲柔感',origin:'韓國'}],
+        news_items:[
+          {title:'好奇推出新包裝設計，強調親膚材質升級',source:'某新聞網',url:'https://example.com/news1'},
+          {title:'官方宣布Q3將調整部分尺寸定價',source:'消費快訊',url:''}
+        ],
+        social_items:[{title:'Dcard媽媽版討論版型偏小、建議提早換尺寸',source:'Dcard',url:'https://example.com/social1'}],
+        updated_at: Date.now()-1000*60*60*3 },
+      { id:'d2', name:'滿意 Merries', sentiment:'negative', has_negative:true,
+        series:[{name:'極上呵護',origin:'日本'},{name:'瞬潔乾爽(NB/S/XXL)',origin:'泰國'},{name:'瞬潔乾爽(M/L/XL)',origin:'台灣'}],
+        news_items:[
+          {title:'部分批次傳出產地調整，官方尚未正式回應',source:'親子論壇',url:'https://example.com/news2'},
+          {title:'消基會提醒消費者選購時留意產地標示',source:'消基會',url:''},
+          {title:'代理商澄清：僅少數系列調整供應鏈',source:'代理商聲明',url:''}
+        ],
+        social_items:[
+          {title:'Threads上多位家長分享產地比較心得',source:'Threads',url:'https://example.com/social2'},
+          {title:'臉書社團整理各系列產地對照表',source:'FB社團',url:''}
+        ],
+        updated_at: Date.now()-1000*60*30 },
+      { id:'d3', name:'妙而舒 Moony', sentiment:'neutral', has_negative:false,
+        series:[{name:'頂柔舒護',origin:'日本'},{name:'瞬吸舒爽',origin:'台灣'}],
+        news_items:[{title:'品牌官網更新尺寸對照表',source:'官方網站',url:''}],
+        social_items:[],
+        updated_at: Date.now()-1000*60*60*20 },
+      { id:'d4', name:'大王 GOO.N', sentiment:'positive', has_negative:false,
+        series:[{name:'肌之奢華',origin:'日本'}],
+        news_items:[], social_items:[],
+        updated_at: Date.now()-1000*60*60*48 },
+      { id:'d5', name:'幫寶適 Pampers', sentiment:'negative', has_negative:true,
+        series:[{name:'一級幫極上守護',origin:'中國'},{name:'巧虎安睡褲',origin:'日本'}],
+        news_items:[
+          {title:'一級幫系列傳出近期改版，產地由日本轉為中國',source:'親子社團整理',url:'https://example.com/news3'},
+          {title:'部分家長反映新版觸感與舊版略有差異',source:'Mobile01',url:''}
+        ],
+        social_items:[{title:'社團串討論新舊版差異與庫存辨識方式',source:'FB社團',url:''}],
+        updated_at: Date.now()-1000*60*60*5 },
+      { id:'d6', name:'麗貝樂 Libero', sentiment:'neutral', has_negative:false,
+        series:[{name:'Touch',origin:'瑞典'},{name:'敢動褲',origin:'波蘭'}],
+        news_items:[],
+        social_items:[{title:'小眾品牌愛用者分享版型心得',source:'PTT BabyMother',url:''}],
+        updated_at: Date.now()-1000*60*60*72 }
+    ],
+    food: [
+      { id:'f1', name:'亨氏 Heinz', sentiment:'positive', has_negative:false,
+        series:[],
+        news_items:[{title:'推出新口味副食品系列',source:'品牌新聞稿',url:''}],
+        social_items:[],
+        updated_at: Date.now()-1000*60*60*10 },
+      { id:'f2', name:'嘉寶 Gerber', sentiment:'neutral', has_negative:false,
+        series:[{name:'米精',origin:'台灣'}],
+        news_items:[],
+        social_items:[{title:'社團討論不同階段米精濃稠度調配方式',source:'FB社團',url:''}],
+        updated_at: Date.now()-1000*60*60*15 },
+      { id:'f3', name:'小獅王辛巴', sentiment:'positive', has_negative:false,
+        series:[], news_items:[], social_items:[],
+        updated_at: Date.now()-1000*60*60*60 },
+      { id:'f4', name:'田原香', sentiment:'neutral', has_negative:false,
+        series:[],
+        news_items:[{title:'地方品牌參與食農教育活動報導',source:'地方新聞',url:''}],
+        social_items:[{title:'媽媽版分享自製副食品搭配心得',source:'Dcard',url:''}],
+        updated_at: Date.now()-1000*60*60*8 },
+      { id:'f5', name:"貝拉米 Bellamy's", sentiment:'negative', has_negative:true,
+        series:[{name:'有機米精',origin:'澳洲'}],
+        news_items:[{title:'進口檢驗流程延長，部分通路缺貨',source:'通路公告',url:''}],
+        social_items:[],
+        updated_at: Date.now()-1000*60*60*2 }
+    ],
+    formula: [
+      { id:'m1', name:'雪印 Snow Brand', sentiment:'positive', has_negative:false,
+        series:[{name:'蓮心1號',origin:'日本'}],
+        news_items:[{title:'推出新配方強調好吸收',source:'品牌新聞稿',url:''}],
+        social_items:[{title:'社團分享轉換奶粉適應期心得',source:'FB社團',url:''}],
+        updated_at: Date.now()-1000*60*60*6 },
+      { id:'m2', name:'惠氏 Wyeth', sentiment:'neutral', has_negative:false,
+        series:[{name:'啟賦',origin:'愛爾蘭'},{name:'illuma',origin:'紐西蘭'}],
+        news_items:[],
+        social_items:[
+          {title:'討論啟賦與illuma價差是否值得',source:'Dcard',url:''},
+          {title:'分享轉換配方時的腸胃適應狀況',source:'Threads',url:''}
+        ],
+        updated_at: Date.now()-1000*60*60*40 },
+      { id:'m3', name:'亞培 Similac', sentiment:'negative', has_negative:true,
+        series:[{name:'親護',origin:'美國'}],
+        news_items:[
+          {title:'部分批次傳出包裝印刷瑕疵，廠商啟動換貨',source:'廠商公告',url:''},
+          {title:'消費者反映客服回應速度不一',source:'消費者論壇',url:''}
+        ],
+        social_items:[{title:'社團整理換貨流程與所需文件',source:'FB社團',url:''}],
+        updated_at: Date.now()-1000*60*15 },
+      { id:'m4', name:'美強生 Enfamil', sentiment:'positive', has_negative:false,
+        series:[{name:'A+',origin:'美國'}],
+        news_items:[], social_items:[],
+        updated_at: Date.now()-1000*60*60*90 },
+      { id:'m5', name:'雀巢 NAN', sentiment:'neutral', has_negative:false,
+        series:[{name:'能恩',origin:'瑞士'}],
+        news_items:[{title:'品牌參與母乳哺育宣導活動',source:'品牌新聞稿',url:''}],
+        social_items:[],
+        updated_at: Date.now()-1000*60*60*25 }
+    ]
+  };
+}
+// ===================================================================
+
+const CATEGORIES = [
+  {key:'diaper', zh:'尿布', en:'DIAPER'},
+  {key:'food', zh:'副食品', en:'BABY FOOD'},
+  {key:'formula', zh:'奶粉', en:'FORMULA'}
+];
+
+let activeCat = 'diaper';
+let brandsByCategory = {diaper:[], food:[], formula:[]};
+let countryFilter = null;
+
+const COUNTRY_PATTERNS = [
+  {names:['台灣','Taiwan'], flag:'🇹🇼', label:'台灣'},
+  {names:['中國大陸','中國','China'], flag:'🇨🇳', label:'中國'},
+  {names:['日本','Japan'], flag:'🇯🇵', label:'日本'},
+  {names:['韓國','South Korea','Korea'], flag:'🇰🇷', label:'韓國'},
+  {names:['美國','USA','United States'], flag:'🇺🇸', label:'美國'},
+  {names:['印尼','Indonesia'], flag:'🇮🇩', label:'印尼'},
+  {names:['泰國','Thailand'], flag:'🇹🇭', label:'泰國'},
+  {names:['越南','Vietnam'], flag:'🇻🇳', label:'越南'},
+  {names:['馬來西亞','Malaysia'], flag:'🇲🇾', label:'馬來西亞'},
+  {names:['菲律賓','Philippines'], flag:'🇵🇭', label:'菲律賓'},
+  {names:['新加坡','Singapore'], flag:'🇸🇬', label:'新加坡'},
+  {names:['印度','India'], flag:'🇮🇳', label:'印度'},
+  {names:['德國','Germany'], flag:'🇩🇪', label:'德國'},
+  {names:['荷蘭','Netherlands'], flag:'🇳🇱', label:'荷蘭'},
+  {names:['法國','France'], flag:'🇫🇷', label:'法國'},
+  {names:['瑞士','Switzerland'], flag:'🇨🇭', label:'瑞士'},
+  {names:['義大利','Italy'], flag:'🇮🇹', label:'義大利'},
+  {names:['西班牙','Spain'], flag:'🇪🇸', label:'西班牙'},
+  {names:['英國','UK','United Kingdom'], flag:'🇬🇧', label:'英國'},
+  {names:['愛爾蘭','Ireland'], flag:'🇮🇪', label:'愛爾蘭'},
+  {names:['丹麥','Denmark'], flag:'🇩🇰', label:'丹麥'},
+  {names:['瑞典','Sweden'], flag:'🇸🇪', label:'瑞典'},
+  {names:['波蘭','Poland'], flag:'🇵🇱', label:'波蘭'},
+  {names:['紐西蘭','New Zealand'], flag:'🇳🇿', label:'紐西蘭'},
+  {names:['澳洲','Australia'], flag:'🇦🇺', label:'澳洲'},
+  {names:['加拿大','Canada'], flag:'🇨🇦', label:'加拿大'}
+];
+
+function parseCountries(str){
+  if(!str) return [];
+  const found = [];
+  for(const c of COUNTRY_PATTERNS){
+    if(c.names.some(n=>str.includes(n)) && !found.some(f=>f.label===c.label)){
+      found.push(c);
+    }
+  }
+  return found;
+}
+
+function escapeHtml(s){
+  if(s==null) return '';
+  return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function formatTime(ts){
+  if(!ts) return '';
+  const d = new Date(ts);
+  const p = n=>String(n).padStart(2,'0');
+  return `${d.getFullYear()}/${p(d.getMonth()+1)}/${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+
+function sentimentLabel(s){
+  if(s==='positive') return '正常';
+  if(s==='neutral') return '普通';
+  if(s==='negative') return '注意';
+  return '—';
+}
+
+async function loadBrands(){
+  brandsByCategory = makeMockData();
+}
+
+function renderTabs(){
+  const bar = document.getElementById('tabBar');
+  bar.innerHTML = CATEGORIES.map(c=>`
+    <button class="tab ${c.key===activeCat?'active':''}" data-cat="${c.key}">
+      ${c.zh}<span class="en">${c.en}</span>
+    </button>
+  `).join('');
+  bar.querySelectorAll('.tab').forEach(btn=>{
+    btn.addEventListener('click', ()=>switchTab(btn.dataset.cat));
+  });
+}
+
+function switchTab(cat){
+  activeCat = cat;
+  countryFilter = null;
+  renderTabs();
+  renderGrid();
+}
+
+function allCountriesOf(brand){
+  if(!brand || !brand.series) return [];
+  let all = [];
+  brand.series.forEach(s=>{ all = all.concat(parseCountries(s.origin)); });
+  return all;
+}
+
+function seriesListHtml(seriesArr){
+  if(!seriesArr || seriesArr.length===0) return '<p class="field-value muted">暫無資料</p>';
+  return '<div class="series-list">' + seriesArr.map(s=>{
+    const countries = parseCountries(s.origin);
+    const badges = countries.length
+      ? countries.map(c=>`<span class="flag-chip">${c.flag} ${escapeHtml(c.label)}</span>`).join('')
+      : '<span class="flag-chip unknown">🏳️ 未知</span>';
+    return `<div class="series-row"><span class="series-name">${escapeHtml(s.name || '未命名系列')}</span>${badges}</div>`;
+  }).join('') + '</div>';
+}
+
+function cardTemplate(brand){
+  const newsItems = brand.news_items || [];
+  const socialItems = brand.social_items || [];
+  const totalItems = newsItems.length + socialItems.length;
+  const latestNews = newsItems[0];
+  const latestSocial = socialItems[0];
+
+  return `
+    <div class="card" data-id="${escapeHtml(brand.id)}">
+      <div class="card-head"><h3>${escapeHtml(brand.name)}</h3></div>
+      <div class="stamp ${brand.sentiment || 'neutral'}">${escapeHtml(sentimentLabel(brand.sentiment))}</div>
+      <div>
+        <div class="field-label">系列與產地</div>
+        ${seriesListHtml(brand.series)}
+      </div>
+      <div>
+        <div class="field-label">近期新聞</div>
+        ${brand.has_negative ? '<span class="negative-flag">含負面新聞</span>' : ''}
+        <div class="field-value truncate">${latestNews ? escapeHtml(latestNews.title) : '暫無相關新聞'}</div>
+      </div>
+      <div>
+        <div class="field-label">社群討論</div>
+        <div class="field-value truncate">${latestSocial ? escapeHtml(latestSocial.title) : '暫無相關討論'}</div>
+      </div>
+      <div class="card-footer">
+        <span class="updated-at">${brand.updated_at ? '更新於 '+formatTime(brand.updated_at) : ''}</span>
+        ${ totalItems>0 ? `<button class="panel-link" data-action="panel">已發現 ${totalItems} 則相關消息 →</button>` : '<span class="updated-at">尚無相關消息</span>' }
+      </div>
+    </div>
+  `;
+}
+
+function renderFilterBar(){
+  const bar = document.getElementById('filterBar');
+  if(activeCat !== 'diaper'){ bar.innerHTML=''; bar.style.display='none'; return; }
+  const list = brandsByCategory.diaper || [];
+  const map = new Map();
+  list.forEach(b=>{ allCountriesOf(b).forEach(c=>map.set(c.label, c.flag)); });
+  if(map.size===0){ bar.innerHTML=''; bar.style.display='none'; return; }
+  bar.style.display = 'flex';
+  const chips = [`<button class="filter-chip ${!countryFilter?'active':''}" data-country="">全部</button>`];
+  map.forEach((flag,label)=>{
+    chips.push(`<button class="filter-chip ${countryFilter===label?'active':''}" data-country="${escapeHtml(label)}">${flag} ${escapeHtml(label)}</button>`);
+  });
+  bar.innerHTML = chips.join('');
+  bar.querySelectorAll('.filter-chip').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      countryFilter = btn.dataset.country || null;
+      renderGrid();
+    });
+  });
+}
+
+function renderGrid(){
+  const grid = document.getElementById('grid');
+  renderFilterBar();
+  let list = brandsByCategory[activeCat] || [];
+  if(activeCat==='diaper' && countryFilter){
+    list = list.filter(b=> allCountriesOf(b).some(c=>c.label===countryFilter));
+  }
+  grid.className = 'grid' + (activeCat==='diaper' ? ' diaper-grid' : '');
+  if(list.length===0){
+    const msg = (activeCat==='diaper' && countryFilter)
+      ? '這個國家目前沒有符合的品牌資料，換一個篩選看看。'
+      : '站方尚未整理這個分類的品牌資料，請稍後再來看看。';
+    grid.innerHTML = `<p class="empty-note">${msg}</p>`;
+    return;
+  }
+  grid.innerHTML = list.map(b=>cardTemplate(b)).join('');
+  grid.querySelectorAll('.card').forEach(cardEl=>{
+    const id = cardEl.dataset.id;
+    const btn = cardEl.querySelector('[data-action="panel"]');
+    if(btn) btn.addEventListener('click', ()=>openPanel(id));
+  });
+}
+
+function openPanel(id){
+  const brand = (brandsByCategory[activeCat]||[]).find(b=>b.id===id);
+  if(!brand) return;
+  document.getElementById('panelTitle').textContent = brand.name;
+  const items = [
+    ...(brand.news_items||[]).map(it=>({...it, type:'新聞'})),
+    ...(brand.social_items||[]).map(it=>({...it, type:'社群'}))
+  ];
+  const body = document.getElementById('panelBody');
+  if(items.length===0){
+    body.innerHTML = '<p class="empty-note">目前沒有查到相關消息。</p>';
+  } else {
+    body.innerHTML = items.map(it=>`
+      <div class="panel-item">
+        <span class="panel-item-tag">${escapeHtml(it.type)}${it.source ? ' · '+escapeHtml(it.source) : ''}</span>
+        <p class="panel-item-title">${escapeHtml(it.title || '(無標題)')}</p>
+        ${it.url ? `<a class="panel-item-link" href="${escapeHtml(it.url)}" target="_blank" rel="noopener">查看原文 →</a>` : ''}
+      </div>
+    `).join('');
+  }
+  document.getElementById('panel').classList.add('open');
+  document.getElementById('panelBackdrop').classList.add('open');
+}
+function closePanel(){
+  document.getElementById('panel').classList.remove('open');
+  document.getElementById('panelBackdrop').classList.remove('open');
+}
+
+async function init(){
+  const note = document.getElementById('publicNote');
+  try{
+    await loadBrands();
+    note.textContent = '⚠️ 假資料模式，僅供介面測試';
+    note.className = 'public-note';
+  }catch(e){
+    console.error(e);
+    note.textContent = '資料載入失敗：' + e.message;
+    note.className = 'public-note err';
+  }
+  renderTabs();
+  renderGrid();
+
+  document.getElementById('panelClose').addEventListener('click', closePanel);
+  document.getElementById('panelBackdrop').addEventListener('click', closePanel);
+  document.addEventListener('keydown', e=>{
+    if(e.key==='Escape') closePanel();
+  });
+}
+
+init();
+</script>
+</body>
+</html>
